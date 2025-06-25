@@ -19,15 +19,15 @@ fun Application.configureSecurity() {
             cookie.extensions["SameSite"] = "lax"
         }
     }
-    install(Authentication) {
-        firebase {
-            adminFile = File("path/to/admin/file.json")
-            realm = "My Server"
-            validate { token ->
-                MyAuthenticatedUser(id = token.uid)
-            }
-        }
-    }
+//    install(Authentication) {
+//        firebase {
+//            adminFile = File("path/to/admin/file.json")
+//            realm = "My Server"
+//            validate { token ->
+//                MyAuthenticatedUser(id = token.uid)
+//            }
+//        }
+//    }
     authentication {
         oauth("auth-oauth-google") {
             urlProvider = { "http://localhost:8080/callback" }
