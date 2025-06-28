@@ -19,6 +19,8 @@ repositories {
 
 dependencies {
     //MongoDB
+    implementation("org.litote.kmongo:kmongo:4.11.0") // Core library
+    implementation("org.litote.kmongo:kmongo-coroutine:4.11.0") // For coroutines
     implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1")
 
     implementation(libs.ktor.server.rate.limiting)

@@ -6,6 +6,7 @@ import com.shared.plugins.configureHTTP
 import com.shared.plugins.configureMonitoring
 import com.shared.plugins.configureRouting
 import com.shared.plugins.configureSecurity
+import com.shared.plugins.configureSerialization
 import com.shared.plugins.configureSockets
 import io.ktor.server.application.*
 
@@ -14,6 +15,8 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+
+    /** Common configurations */
     configureRateLimiting()
     configureSockets()
     configureFrameworks()
@@ -22,4 +25,6 @@ fun Application.module() {
     configureSecurity()
     configureHTTP()
     configureRouting()
+
+    /** Modules */
 }
