@@ -12,3 +12,7 @@ fun CreateOrganizationRequest.toDomain(): Organization {
         meta = meta
     )
 }
+
+fun Organization.toGetResponse(): String {
+    return _id.toHexString()
+}

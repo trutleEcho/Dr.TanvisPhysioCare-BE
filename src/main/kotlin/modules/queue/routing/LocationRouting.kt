@@ -1,10 +1,9 @@
-package com.modules.core.routing
+package com.modules.queue.routing
 
-import com.modules.core.mappers.toDomain
-import com.modules.core.models.entities.Organization
-import com.modules.core.models.requests.CreateOrganizationRequest
-import com.modules.core.models.requests.UpdateOrganizationServicesRequest
-import com.modules.core.useCases.OrganizationUseCase
+import com.modules.queue.models.requests.CreateLocationRequest
+import com.modules.queue.models.requests.UpdateLocationRequest
+import com.modules.queue.models.requests.UpdateLocationStatusRequest
+import com.modules.queue.useCases.LocationUseCase
 import com.mongodb.client.model.Filters
 import com.shared.models.ApiResponse
 import com.shared.utils.Response
@@ -13,22 +12,31 @@ import io.ktor.server.application.Application
 import io.ktor.server.request.receive
 import io.ktor.server.routing.get
 import io.ktor.server.routing.patch
+import io.ktor.server.routing.port
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
+import org.bson.conversions.Bson
 import org.koin.ktor.ext.inject
-import kotlin.getValue
 
-fun Application.organizationRouting() {
-    val organizationUseCase by inject<OrganizationUseCase>()
+fun Application.locationRouting() {
+
+    // Dependencies injection
+    val locationUseCase by inject<LocationUseCase>()
 
     routing {
-        get(CoreRoutes.Organizations.GET) {
+        get(QueueRoutes.Locations.GET) {
             runCatching {
-                val name = call.parameters["name"]
+                val orgId = call.parameters["orgId"]
+                val query = call.parameters["query"]
+
+                var filters: Bson = Filters.empty()
+                when {
+                    query != null -> filters = Filters.and(filters, Filters.regex("name", query, "i"))
+                }
                 Response.send(
                     call,
-                    organizationUseCase.get(Filters.eq(Organization::name.name, name)),
-                    CoreRoutes.Organizations.GET
+                    locationUseCase.get(orgId = orgId, filter = filters),
+                    QueueRoutes.Locations.GET
                 )
             }.onFailure {
                 it.printStackTrace()
@@ -38,23 +46,18 @@ fun Application.organizationRouting() {
                         statusCode = HttpStatusCode.InternalServerError,
                         error = it.message.toString()
                     ),
-                    CoreRoutes.Organizations.GET
+                    QueueRoutes.Locations.GET
                 )
             }
         }
 
-        get(CoreRoutes.Organizations.GET_PAGINATED) {
+        post(QueueRoutes.Locations.CREATE){
             runCatching {
-                val lastEntryId = call.parameters["lastEntryId"]
-                val limit = call.parameters["limit"]
+                val request = call.receive<CreateLocationRequest>()
                 Response.send(
                     call,
-                    organizationUseCase.getPaginated(
-                        filter = Filters.empty(),
-                        lastEntryId = lastEntryId,
-                        limit = limit?.toInt() ?: 10
-                    ),
-                    CoreRoutes.Organizations.GET_PAGINATED
+                    locationUseCase.create(request),
+                    QueueRoutes.Locations.CREATE
                 )
             }.onFailure {
                 it.printStackTrace()
@@ -63,18 +66,19 @@ fun Application.organizationRouting() {
                     ApiResponse.failure<String>(
                         statusCode = HttpStatusCode.InternalServerError,
                         error = it.message.toString()
-                    )
+                    ),
+                    QueueRoutes.Locations.CREATE
                 )
             }
         }
 
-        post(CoreRoutes.Organizations.CREATE) {
+        patch(QueueRoutes.Locations.UPDATE) {
             runCatching {
-                val request = call.receive<CreateOrganizationRequest>()
+                val request = call.receive<UpdateLocationRequest>()
                 Response.send(
                     call,
-                    organizationUseCase.create(request.toDomain()),
-                    CoreRoutes.Organizations.CREATE
+                    locationUseCase.update(request),
+                    QueueRoutes.Locations.UPDATE
                 )
             }.onFailure {
                 it.printStackTrace()
@@ -84,18 +88,18 @@ fun Application.organizationRouting() {
                         statusCode = HttpStatusCode.InternalServerError,
                         error = it.message.toString()
                     ),
-                    CoreRoutes.Organizations.CREATE
+                    QueueRoutes.Locations.UPDATE
                 )
             }
         }
 
-        patch(CoreRoutes.Organizations.UPDATE_SERVICES) {
+        patch(QueueRoutes.Locations.UPDATE_STATUS) {
             runCatching {
-                val request = call.receive<UpdateOrganizationServicesRequest>()
+                val request = call.receive<UpdateLocationStatusRequest>()
                 Response.send(
                     call,
-                    organizationUseCase.updateServices(request),
-                    CoreRoutes.Organizations.UPDATE_SERVICES
+                    locationUseCase.updateStatus(request),
+                    QueueRoutes.Locations.UPDATE_STATUS
                 )
             }.onFailure {
                 it.printStackTrace()
@@ -105,7 +109,7 @@ fun Application.organizationRouting() {
                         statusCode = HttpStatusCode.InternalServerError,
                         error = it.message.toString()
                     ),
-                    CoreRoutes.Organizations.UPDATE_SERVICES
+                    QueueRoutes.Locations.UPDATE_STATUS
                 )
             }
         }

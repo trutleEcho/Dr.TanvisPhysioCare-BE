@@ -1,5 +1,6 @@
 package com.modules.core.useCases
 
+import com.modules.core.mappers.toGetResponse
 import com.modules.core.models.entities.Organization
 import com.modules.core.models.requests.UpdateOrganizationServicesRequest
 import com.shared.Repository
@@ -22,9 +23,9 @@ class OrganizationUseCase(
     suspend fun get(filter: Bson): ApiResponse<Organization> {
         val db = client.getDatabase(Config.DB_NAME)
         val organizationCollection = db.getCollection<Organization>(Collections.ORGANIZATIONS)
-        val organizations = organizationRepository.get(collection = organizationCollection, filter = filter)
+        val organization = organizationRepository.get(collection = organizationCollection, filter = filter)
             ?: return ApiResponse.failure(statusCode = HttpStatusCode.NoContent)
-        return ApiResponse.success(organizations)
+        return ApiResponse.success(organization)
     }
 
     suspend fun getById(id: String?): ApiResponse<Organization> {

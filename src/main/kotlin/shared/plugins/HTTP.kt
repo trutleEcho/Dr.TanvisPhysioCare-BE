@@ -8,12 +8,12 @@ import io.ktor.server.plugins.defaultheaders.*
 import io.ktor.server.plugins.hsts.*
 
 fun Application.configureHTTP() {
-    install(HSTS) {
-        includeSubDomains = true
-    }
-    install(DefaultHeaders) {
-        header("X-Engine", "Ktor") // will send this header with each response
-    }
+//    install(HSTS) {
+//        includeSubDomains = true
+//    }
+//    install(DefaultHeaders) {
+//        header("X-Engine", "Ktor") // will send this header with each response
+//    }
     install(CORS) {
         allowMethod(HttpMethod.Options)
         allowMethod(HttpMethod.Put)
@@ -22,8 +22,13 @@ fun Application.configureHTTP() {
         allowMethod(HttpMethod.Post)
         allowMethod(HttpMethod.Get)
         allowHeader(HttpHeaders.Authorization)
-        allowHeader("MyCustomHeader")
+        allowHeader(HttpHeaders.ContentType)
+        allowHeader(HttpHeaders.Accept)
+        allowHeader(HttpHeaders.Origin)
+        allowHeader(HttpHeaders.AccessControlRequestMethod)
+        allowHeader(HttpHeaders.AccessControlRequestHeaders)
+        allowCredentials = true
         anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
     }
-    install(Compression)
+//    install(Compression)
 }
