@@ -201,7 +201,7 @@ class TokenUseCase(
             session.startTransaction()
 
             // Get organization.
-            val organization = organizationRepository.getById(organizationCollection, request.id)
+            val organization = organizationRepository.getById(organizationCollection, request.organizationId)
                 ?: return ApiResponse.failure(statusCode = HttpStatusCode.BadRequest, error = "Organization not found")
 
             // Get tokens collection within organization database.
@@ -212,7 +212,7 @@ class TokenUseCase(
             if (!tokenRepository.delete(
                     collection = tokenCollection,
                     session = session,
-                    filter = Filters.eq(Token::_id.name, ObjectId(request.id))
+                    filter = Filters.eq(Token::_id.name, ObjectId(request.tokenId))
                 )
             ) {
                 session.abortTransactionAndAwait()
