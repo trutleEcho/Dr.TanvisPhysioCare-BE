@@ -11,6 +11,7 @@ data class Token(
     @Serializable(with = ObjectIdSerializer::class)
     @BsonId val _id: ObjectId = ObjectId(),
     val locationId: String,
+    val hostId: String,
     val name: String,
     val phoneNumber: String,
     val email: String? = null,

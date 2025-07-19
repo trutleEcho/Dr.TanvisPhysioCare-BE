@@ -1,12 +1,10 @@
-package com.modules.core.useCases
+package com.modules.doctor.usecases
 
-import com.modules.core.mappers.toDomain
-import com.modules.core.models.entities.Employee
 import com.modules.core.models.entities.Organization
-import com.modules.core.models.requests.CreateEmployeeRequest
+import com.modules.doctor.mappers.toDomain
+import com.modules.doctor.models.entities.Employee
+import com.modules.doctor.models.requests.CreateEmployeeRequest
 import com.shared.Repository
-import com.modules.core.repository.employee.EmployeeRepository
-import com.modules.core.repository.organization.OrganizationRepository
 import com.shared.config.Collections
 import com.shared.config.Config
 import com.shared.models.ApiResponse
@@ -26,17 +24,17 @@ class EmployeeUseCase(
     val organizationCollection = db.getCollection<Organization>(Collections.ORGANIZATIONS)
 
     suspend fun getById(orgId: String?, id: String?): ApiResponse<Employee> {
-        if (orgId == null) return ApiResponse.failure(statusCode = HttpStatusCode.BadRequest)
-        val organization = organizationRepository.getById(organizationCollection, orgId) ?: return ApiResponse.failure(
-            statusCode = HttpStatusCode.BadRequest,
+        if (orgId == null) return ApiResponse.Companion.failure(statusCode = HttpStatusCode.Companion.BadRequest)
+        val organization = organizationRepository.getById(organizationCollection, orgId) ?: return ApiResponse.Companion.failure(
+            statusCode = HttpStatusCode.Companion.BadRequest,
             error = "Organization not found"
         )
-        if (id == null) return ApiResponse.failure(statusCode = HttpStatusCode.BadRequest)
+        if (id == null) return ApiResponse.Companion.failure(statusCode = HttpStatusCode.Companion.BadRequest)
         val db = client.getDatabase(organization.dbName)
         val employeeCollection = db.getCollection<Employee>(Collections.EMPLOYEES)
         val employee = employeeRepository.getById(collection = employeeCollection, id = id)
-            ?: return ApiResponse.failure(statusCode = HttpStatusCode.NoContent)
-        return ApiResponse.success(employee)
+            ?: return ApiResponse.Companion.failure(statusCode = HttpStatusCode.Companion.NoContent)
+        return ApiResponse.Companion.success(employee)
     }
 
     suspend fun getPaginated(
@@ -45,9 +43,9 @@ class EmployeeUseCase(
         lastEntryId: String?,
         limit: Int
     ): ApiResponse<PaginationResponse<Employee>> {
-        if (orgId == null) return ApiResponse.failure(statusCode = HttpStatusCode.BadRequest)
-        val organization = organizationRepository.getById(organizationCollection, orgId) ?: return ApiResponse.failure(
-            statusCode = HttpStatusCode.BadRequest,
+        if (orgId == null) return ApiResponse.Companion.failure(statusCode = HttpStatusCode.Companion.BadRequest)
+        val organization = organizationRepository.getById(organizationCollection, orgId) ?: return ApiResponse.Companion.failure(
+            statusCode = HttpStatusCode.Companion.BadRequest,
             error = "Organization not found"
         )
         val db = client.getDatabase(organization.dbName)
@@ -58,13 +56,13 @@ class EmployeeUseCase(
             lastEntryId = lastEntryId,
             limit = limit
         )
-        return ApiResponse.success(employees)
+        return ApiResponse.Companion.success(employees)
     }
 
     suspend fun create(request: CreateEmployeeRequest): ApiResponse<Boolean> {
         val organization = organizationRepository.getById(organizationCollection, request.organizationId)
-            ?: return ApiResponse.failure(
-                statusCode = HttpStatusCode.BadRequest,
+            ?: return ApiResponse.Companion.failure(
+                statusCode = HttpStatusCode.Companion.BadRequest,
                 error = "Organization not found"
             )
         val db = client.getDatabase(organization.dbName)
@@ -78,13 +76,13 @@ class EmployeeUseCase(
                 )
             ) {
                 session.abortTransactionAndAwait()
-                return ApiResponse.failure(
-                    statusCode = HttpStatusCode.InternalServerError,
+                return ApiResponse.Companion.failure(
+                    statusCode = HttpStatusCode.Companion.InternalServerError,
                     error = "Failed to create employee"
                 )
             }
             session.commitTransactionAndAwait()
-            return ApiResponse.success(true)
+            return ApiResponse.Companion.success(true)
         }
     }
 }

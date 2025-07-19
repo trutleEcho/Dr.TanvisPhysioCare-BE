@@ -1,4 +1,4 @@
-package com.modules.queue.models.requests
+package com.modules.queue.models.requests.token
 
 import kotlinx.serialization.Serializable
 

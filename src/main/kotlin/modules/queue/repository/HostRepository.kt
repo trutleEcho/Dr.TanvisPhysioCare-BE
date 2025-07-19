@@ -93,6 +93,14 @@ class HostRepository : Repository<Host> {
         return collection.deleteOne(filter).wasAcknowledged()
     }
 
+    override suspend fun deleteAll(
+        collection: CoroutineCollection<Host>,
+        session: ClientSession?,
+        filter: Bson
+    ): Boolean {
+        return collection.deleteMany(filter).wasAcknowledged()
+    }
+
     override suspend fun deleteById(
         collection: CoroutineCollection<Host>,
         session: ClientSession?,

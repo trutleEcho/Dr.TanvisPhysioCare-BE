@@ -1,6 +1,7 @@
 package com.shared.plugins
 
 import com.modules.core.routing.coreRouting
+import com.modules.doctor.routing.doctorRouting
 import com.modules.queue.routing.queueRouting
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -22,5 +23,6 @@ fun Application.configureRouting() {
 
     /** Routes */
     coreRouting()
+    doctorRouting()
     queueRouting()
 }

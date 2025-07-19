@@ -11,12 +11,19 @@ data class Location(
     @Serializable(with = ObjectIdSerializer::class)
     @BsonId val _id: ObjectId = ObjectId(),
     val organizationId: String,
+    val hosts: List<LocationHost> = emptyList(),
     val name: String,
+    val phoneNumber: String? = null,
     val open: Boolean,
-    val token: Int? = null,
-    val entityIn: Boolean,
     val locationMeta: LocationMeta? = null,
     val meta: Meta
+)
+
+@Serializable
+data class LocationHost(
+    val hostId: String,
+    val hostName: String,
+    val hostPhoneNumber: String? = null
 )
 
 @Serializable
@@ -25,7 +32,6 @@ data class LocationMeta(
     val closeTime: Long? = null,
     val openTime: Long? = null,
     val schedule: List<DailySchedule> = emptyList(),
-    val phone: String? = null
 )
 
 @Serializable

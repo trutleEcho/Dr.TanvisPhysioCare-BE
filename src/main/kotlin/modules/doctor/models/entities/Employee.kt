@@ -1,6 +1,6 @@
-package com.modules.core.models.entities
+package com.modules.doctor.models.entities
 
-import com.modules.core.models.valueObjects.EmployeeTypes
+import com.modules.doctor.models.valueObjects.EmployeeTypes
 import com.shared.models.Meta
 import com.shared.utils.ObjectIdSerializer
 import kotlinx.serialization.Serializable

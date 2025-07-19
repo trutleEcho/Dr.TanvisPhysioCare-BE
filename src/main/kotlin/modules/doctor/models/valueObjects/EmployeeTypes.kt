@@ -1,4 +1,4 @@
-package com.modules.core.models.valueObjects
+package com.modules.doctor.models.valueObjects
 
 enum class EmployeeTypes {
     DOCTOR,

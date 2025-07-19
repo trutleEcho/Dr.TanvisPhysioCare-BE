@@ -1,6 +1,7 @@
 package com.modules.core.routing
 
 import com.modules.core.mappers.toDomain
+import com.modules.doctor.mappers.toDomain
 import com.modules.core.models.entities.Organization
 import com.modules.core.models.requests.CreateOrganizationRequest
 import com.modules.core.models.requests.UpdateOrganizationServicesRequest

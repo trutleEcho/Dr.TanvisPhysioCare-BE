@@ -3,9 +3,9 @@ package com.modules.queue.useCases
 import com.modules.core.models.entities.Organization
 import com.modules.queue.mappers.toDomain
 import com.modules.queue.models.entities.Token
-import com.modules.queue.models.requests.CreateTokenRequest
-import com.modules.queue.models.requests.DeleteTokenRequest
-import com.modules.queue.models.requests.UpdateTokenRequest
+import com.modules.queue.models.requests.token.CreateTokenRequest
+import com.modules.queue.models.requests.token.DeleteTokenRequest
+import com.modules.queue.models.requests.token.UpdateTokenRequest
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.shared.Repository

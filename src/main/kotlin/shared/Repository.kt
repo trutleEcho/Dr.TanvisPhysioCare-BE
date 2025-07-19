@@ -35,5 +35,6 @@ interface Repository<T : Any> {
     ): Boolean
 
     suspend fun delete(collection: CoroutineCollection<T>, session: ClientSession? = null, filter: Bson): Boolean
+    suspend fun deleteAll(collection: CoroutineCollection<T>, session: ClientSession? = null, filter: Bson): Boolean
     suspend fun deleteById(collection: CoroutineCollection<T>, session: ClientSession? = null, id: String): Boolean
 }

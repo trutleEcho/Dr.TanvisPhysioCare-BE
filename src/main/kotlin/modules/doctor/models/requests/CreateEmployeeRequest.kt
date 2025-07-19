@@ -1,6 +1,6 @@
-package com.modules.core.models.requests
+package com.modules.doctor.models.requests
 
-import com.modules.core.models.valueObjects.EmployeeTypes
+import com.modules.doctor.models.valueObjects.EmployeeTypes
 import com.shared.models.Meta
 import kotlinx.serialization.Serializable
 

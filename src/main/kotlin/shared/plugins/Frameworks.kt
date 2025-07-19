@@ -1,11 +1,11 @@
 package com.shared.plugins
 
-import com.modules.core.models.entities.Employee
+import com.modules.doctor.models.entities.Employee
 import com.modules.core.models.entities.Organization
 import com.shared.Repository
-import com.modules.core.repository.employee.EmployeeRepository
+import com.modules.doctor.repository.employee.EmployeeRepository
 import com.modules.core.repository.organization.OrganizationRepository
-import com.modules.core.useCases.EmployeeUseCase
+import com.modules.doctor.usecases.EmployeeUseCase
 import com.modules.core.useCases.OrganizationUseCase
 import com.modules.queue.models.entities.Host
 import com.modules.queue.models.entities.Location
@@ -44,7 +44,7 @@ fun Application.configureFrameworks() {
             // Queue Module
             single<Repository<Host>>(qualifier = named("hostRepo")) { HostRepository() }
             single<Repository<Location>>(qualifier = named("locRepo")) { LocationRepository() }
-            single<Repository<Token>>(qualifier = named("userRepo")) { TokenRepository() }
+            single<Repository<Token>>(qualifier = named("tokRepo")) { TokenRepository() }
 
             /** use cases */
 
@@ -53,9 +53,9 @@ fun Application.configureFrameworks() {
             single { EmployeeUseCase(get(), get(qualifier = named("orgRepo")), get(qualifier = named("empRepo"))) }
 
             // Queue Module
-            single { HostUseCase(get(), get(qualifier = named("orgRepo")), get(qualifier = named("hostRepo"))) }
+            single { HostUseCase(get(), get(qualifier = named("orgRepo")),  get(qualifier = named("locRepo")),get(qualifier = named("hostRepo")), get(qualifier = named("tokRepo"))) }
             single { LocationUseCase(get(), get(qualifier = named("orgRepo")), get(qualifier = named("locRepo"))) }
-            single { TokenUseCase(get(), get(qualifier = named("orgRepo")), get(qualifier = named("userRepo"))) }
+            single { TokenUseCase(get(), get(qualifier = named("orgRepo")), get(qualifier = named("tokRepo"))) }
         })
     }
 }

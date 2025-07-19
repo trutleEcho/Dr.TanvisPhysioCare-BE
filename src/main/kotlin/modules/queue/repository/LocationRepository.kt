@@ -93,6 +93,14 @@ class LocationRepository : Repository<Location> {
         return collection.deleteOne(filter).wasAcknowledged()
     }
 
+    override suspend fun deleteAll(
+        collection: CoroutineCollection<Location>,
+        session: ClientSession?,
+        filter: Bson
+    ): Boolean {
+        return collection.deleteMany(filter).wasAcknowledged()
+    }
+
     override suspend fun deleteById(
         collection: CoroutineCollection<Location>,
         session: ClientSession?,

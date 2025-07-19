@@ -1,8 +1,8 @@
 package com.modules.queue.routing
 
-import com.modules.queue.models.requests.CreateLocationRequest
-import com.modules.queue.models.requests.UpdateLocationRequest
-import com.modules.queue.models.requests.UpdateLocationStatusRequest
+import com.modules.queue.models.requests.location.CreateLocationRequest
+import com.modules.queue.models.requests.location.UpdateLocationRequest
+import com.modules.queue.models.requests.location.UpdateLocationStatusRequest
 import com.modules.queue.useCases.LocationUseCase
 import com.mongodb.client.model.Filters
 import com.shared.models.ApiResponse
@@ -10,9 +10,9 @@ import com.shared.utils.Response
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.request.receive
+import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.patch
-import io.ktor.server.routing.port
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import org.bson.conversions.Bson

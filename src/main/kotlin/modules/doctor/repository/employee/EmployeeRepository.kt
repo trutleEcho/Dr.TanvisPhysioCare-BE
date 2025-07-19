@@ -1,6 +1,6 @@
-package com.modules.core.repository.employee
+package com.modules.doctor.repository.employee
 
-import com.modules.core.models.entities.Employee
+import com.modules.doctor.models.entities.Employee
 import com.shared.Repository
 import com.mongodb.client.model.Filters
 import com.mongodb.reactivestreams.client.ClientSession
@@ -92,6 +92,14 @@ class EmployeeRepository() : Repository<Employee> {
 
         return collection.deleteOne(filter).wasAcknowledged()
 
+    }
+
+    override suspend fun deleteAll(
+        collection: CoroutineCollection<Employee>,
+        session: ClientSession?,
+        filter: Bson
+    ): Boolean {
+        return collection.deleteMany(filter).wasAcknowledged()
     }
 
     override suspend fun deleteById(

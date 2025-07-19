@@ -1,8 +1,8 @@
 package com.modules.queue.routing
 
-import com.modules.queue.models.requests.CreateTokenRequest
-import com.modules.queue.models.requests.DeleteTokenRequest
-import com.modules.queue.models.requests.UpdateTokenRequest
+import com.modules.queue.models.requests.token.CreateTokenRequest
+import com.modules.queue.models.requests.token.DeleteTokenRequest
+import com.modules.queue.models.requests.token.UpdateTokenRequest
 import com.modules.queue.useCases.TokenUseCase
 import com.mongodb.client.model.Filters
 import com.shared.models.ApiResponse
@@ -28,13 +28,15 @@ fun Application.userRouting() {
             runCatching {
                 val orgId = call.parameters["orgId"]
                 val query = call.parameters["query"]
-                val locId = call.parameters["locId"]
+                val locId = call.parameters["locationId"]
+                val hostId = call.parameters["hostId"]
                 val startDate = call.parameters["startDate"]
                 val endDate = call.parameters["endDate"]
 
                 var filters: Bson = Filters.empty()
 
                 when {
+                    hostId != null -> filters = Filters.and(filters, Filters.regex("hostId", hostId, "i"))
                     query != null -> filters = Filters.and(filters, Filters.regex("name", query, "i"))
                     locId != null -> filters = Filters.and(filters, Filters.regex("locationId", locId, "i"))
                     startDate != null -> filters = Filters.and(filters, Filters.gte("createdAt", startDate))

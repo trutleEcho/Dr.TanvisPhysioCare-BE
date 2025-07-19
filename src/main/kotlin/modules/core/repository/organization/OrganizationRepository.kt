@@ -78,6 +78,14 @@ class OrganizationRepository() : Repository<Organization> {
         return collection.deleteOne(filter).wasAcknowledged()
     }
 
+    override suspend fun deleteAll(
+        collection: CoroutineCollection<Organization>,
+        session: ClientSession?,
+        filter: Bson
+    ): Boolean {
+        return collection.deleteMany(filter).wasAcknowledged()
+    }
+
     override suspend fun deleteById(
         collection: CoroutineCollection<Organization>,
         session: ClientSession?,

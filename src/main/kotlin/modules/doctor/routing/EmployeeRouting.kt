@@ -1,7 +1,8 @@
-package com.modules.core.routing
+package com.modules.doctor.routing
 
-import com.modules.core.models.requests.CreateEmployeeRequest
-import com.modules.core.useCases.EmployeeUseCase
+import com.modules.core.routing.CoreRoutes
+import com.modules.doctor.models.requests.CreateEmployeeRequest
+import com.modules.doctor.usecases.EmployeeUseCase
 import com.mongodb.client.model.Filters
 import com.shared.models.ApiResponse
 import com.shared.utils.Response

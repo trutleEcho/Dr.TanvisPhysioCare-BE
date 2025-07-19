@@ -93,6 +93,14 @@ class TokenRepository : Repository<Token> {
         return collection.deleteOne(filter).wasAcknowledged()
     }
 
+    override suspend fun deleteAll(
+        collection: CoroutineCollection<Token>,
+        session: ClientSession?,
+        filter: Bson
+    ): Boolean {
+        return collection.deleteMany(filter).wasAcknowledged()
+    }
+
     override suspend fun deleteById(
         collection: CoroutineCollection<Token>,
         session: ClientSession?,

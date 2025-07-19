@@ -3,10 +3,9 @@ package com.modules.queue.useCases
 import com.modules.core.models.entities.Organization
 import com.modules.queue.mappers.toDomain
 import com.modules.queue.models.entities.Location
-import com.modules.queue.models.requests.CreateLocationRequest
-import com.modules.queue.models.requests.UpdateLocationRequest
-import com.modules.queue.models.requests.UpdateLocationStatusRequest
-import com.mongodb.client.model.Filters
+import com.modules.queue.models.requests.location.CreateLocationRequest
+import com.modules.queue.models.requests.location.UpdateLocationRequest
+import com.modules.queue.models.requests.location.UpdateLocationStatusRequest
 import com.mongodb.client.model.Updates
 import com.shared.Repository
 import com.shared.config.Collections
@@ -122,12 +121,13 @@ class LocationUseCase(
             val locationCollection = db.getCollection<Location>(Collections.LOCATIONS)
 
             // Update location within organization database
-            if (!locationRepository.update(
+            if (!locationRepository.updateById(
                     collection = locationCollection,
                     session = session,
-                    filter = Filters.eq(Location::name.name, request.name),
-                    update = Updates.set(
-                        Location::locationMeta.name, request.locationMeta
+                    id = request.locationId,
+                    update = Updates.combine(
+                        Updates.set(Location::phoneNumber.name, request.phoneNumber),
+                        Updates.set(Location::locationMeta.name, request.locationMeta)
                     )
                 )
             ) {
@@ -158,14 +158,12 @@ class LocationUseCase(
             val locationCollection = db.getCollection<Location>(Collections.LOCATIONS)
 
             // Update location within organization database
-            if (!locationRepository.update(
+            if (!locationRepository.updateById(
                     collection = locationCollection,
                     session = session,
-                    filter = Filters.eq(Location::name.name, request.name),
+                    id = request.locationId,
                     update = Updates.combine(
-                        Updates.set(Location::open.name, request.open),
-                        Updates.set(Location::token.name, request.token),
-                        Updates.set(Location::entityIn.name, request.entityIn)
+                        Updates.set(Location::open.name, request.open)
                     )
                 )
             ) {
