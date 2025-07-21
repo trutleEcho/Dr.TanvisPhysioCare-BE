@@ -7,6 +7,7 @@ import com.modules.queue.models.requests.token.CreateTokenRequest
 import com.modules.queue.models.requests.token.DeleteTokenRequest
 import com.modules.queue.models.requests.token.UpdateTokenRequest
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Sorts.descending
 import com.mongodb.client.model.Updates
 import com.shared.Repository
 import com.shared.config.Collections
@@ -19,6 +20,8 @@ import org.bson.types.ObjectId
 import org.litote.kmongo.coroutine.CoroutineClient
 import org.litote.kmongo.coroutine.abortTransactionAndAwait
 import org.litote.kmongo.coroutine.commitTransactionAndAwait
+import org.litote.kmongo.descending
+import org.litote.kmongo.ne
 
 class TokenUseCase(
     private val client: CoroutineClient,
@@ -131,7 +134,43 @@ class TokenUseCase(
         return ApiResponse.success(tokens)
     }
 
-    suspend fun create(request: CreateTokenRequest): ApiResponse<Boolean> {
+    suspend fun validate(orgId: String, phoneNumber: String,date: Long?): ApiResponse<Int> {
+        val organization = organizationRepository.getById(
+            collection = organizationCollection,
+            id = orgId
+        ) ?: return ApiResponse.failure(
+            statusCode = HttpStatusCode.BadRequest,
+            error = "Organization not found"
+        )
+
+        val db = client.getDatabase(organization.dbName)
+        val tokenCollection = db.getCollection<Token>(Collections.TOKENS)
+
+        val filters = mutableListOf<Bson>(
+            Filters.eq(Token::phoneNumber.name, phoneNumber)
+        )
+
+        if (date != null) {
+            filters.add(Filters.eq(Token::date.name, date))
+        }
+
+        val token = tokenRepository.get(
+            tokenCollection,
+            filter = Filters.and(filters)
+        ) ?: return ApiResponse.failure(
+            statusCode = HttpStatusCode.NoContent,
+            error = "Token not found."
+        )
+
+        val tokenValue = token.token ?: return ApiResponse.failure(
+            statusCode = HttpStatusCode.NoContent,
+            error = "Token string is missing."
+        )
+
+        return ApiResponse.success(data = tokenValue)
+    }
+
+    suspend fun create(request: CreateTokenRequest): ApiResponse<Int> {
         client.startSession().use { session ->
             session.startTransaction()
 
@@ -147,14 +186,27 @@ class TokenUseCase(
             val db = client.getDatabase(organization.dbName)
             val tokenCollection = db.getCollection<Token>(Collections.TOKENS)
 
+            val lastToken = (tokenCollection.find(
+                Filters.and(
+                    Filters.eq(Token::locationId.name, request.locationId),
+                    Filters.eq(Token::hostId.name, request.hostId),
+                    Filters.eq(Token::date.name, request.date),
+                )
+            ).sort(descending(Token::token.name)).first()?.token ?: 0) + 1
+
             // Create token.
-            if (!tokenRepository.create(collection = tokenCollection, session = session, entity = request.toDomain())) {
+            if (!tokenRepository.create(
+                    collection = tokenCollection,
+                    session = session,
+                    entity = request.toDomain(lastToken)
+                )
+            ) {
                 session.abortTransactionAndAwait()
             }
 
             // Commit transaction and return.
             session.commitTransactionAndAwait()
-            return ApiResponse.success(true)
+            return ApiResponse.success(lastToken)
         }
     }
 

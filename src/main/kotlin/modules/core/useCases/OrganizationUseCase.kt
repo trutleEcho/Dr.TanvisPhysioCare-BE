@@ -1,8 +1,10 @@
 package com.modules.core.useCases
 
+import com.modules.core.mappers.queueGetOrganizationsResponse
 import com.modules.core.mappers.toGetResponse
 import com.modules.core.models.entities.Organization
 import com.modules.core.models.requests.UpdateOrganizationServicesRequest
+import com.modules.core.models.response.QueueOrganizationsResponse
 import com.shared.Repository
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
@@ -20,12 +22,21 @@ class OrganizationUseCase(
     private val client: CoroutineClient,
     private val organizationRepository: Repository<Organization>
 ) {
-    suspend fun get(filter: Bson): ApiResponse<Organization> {
+    suspend fun get(orgId: String?): ApiResponse<Organization> {
+        if (orgId == null) return ApiResponse.failure(statusCode = HttpStatusCode.BadRequest)
+
         val db = client.getDatabase(Config.DB_NAME)
         val organizationCollection = db.getCollection<Organization>(Collections.ORGANIZATIONS)
-        val organization = organizationRepository.get(collection = organizationCollection, filter = filter)
+        val organization = organizationRepository.getById(collection = organizationCollection, id = orgId)
             ?: return ApiResponse.failure(statusCode = HttpStatusCode.NoContent)
         return ApiResponse.success(organization)
+    }
+
+    suspend fun getAll(): ApiResponse<List<QueueOrganizationsResponse>> {
+        val db = client.getDatabase(Config.DB_NAME)
+        val organizationCollection = db.getCollection<Organization>(Collections.ORGANIZATIONS)
+        val organizations = organizationRepository.getAll(collection = organizationCollection)
+        return ApiResponse.success(organizations.queueGetOrganizationsResponse())
     }
 
     suspend fun getById(id: String?): ApiResponse<Organization> {

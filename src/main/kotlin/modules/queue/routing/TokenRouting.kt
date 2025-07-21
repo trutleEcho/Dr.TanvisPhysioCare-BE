@@ -1,5 +1,6 @@
 package com.modules.queue.routing
 
+import com.modules.queue.models.entities.Token
 import com.modules.queue.models.requests.token.CreateTokenRequest
 import com.modules.queue.models.requests.token.DeleteTokenRequest
 import com.modules.queue.models.requests.token.UpdateTokenRequest
@@ -16,6 +17,7 @@ import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import org.bson.conversions.Bson
+import org.koin.ktor.ext.get
 import org.koin.ktor.ext.inject
 
 fun Application.userRouting() {
@@ -39,8 +41,8 @@ fun Application.userRouting() {
                     hostId != null -> filters = Filters.and(filters, Filters.regex("hostId", hostId, "i"))
                     query != null -> filters = Filters.and(filters, Filters.regex("name", query, "i"))
                     locId != null -> filters = Filters.and(filters, Filters.regex("locationId", locId, "i"))
-                    startDate != null -> filters = Filters.and(filters, Filters.gte("createdAt", startDate))
-                    endDate != null -> filters = Filters.and(filters, Filters.lte("createdAt", endDate))
+                    startDate != null -> filters = Filters.and(filters, Filters.gte("meta.createdAt", startDate))
+                    endDate != null -> filters = Filters.and(filters, Filters.lte("meta.createdAt", endDate))
                 }
                 Response.send(call, tokenUseCase.getAll(orgId = orgId, filter = filters), QueueRoutes.Tokens.GET)
             }.onFailure {
@@ -52,6 +54,41 @@ fun Application.userRouting() {
                         error = it.message.toString()
                     ),
                     QueueRoutes.Tokens.GET
+                )
+            }
+        }
+
+        get(QueueRoutes.Tokens.VALIDATE) {
+            runCatching {
+                val orgId = call.parameters["orgId"] ?: return@get Response.send(
+                    call,
+                    ApiResponse.failure<String>(statusCode = HttpStatusCode.BadRequest, error = "Org Id is missing"),
+                    QueueRoutes.Tokens.VALIDATE
+                )
+                val phoneNumber = call.parameters["phoneNumber"] ?: return@get Response.send(
+                    call,
+                    ApiResponse.failure<String>(
+                        statusCode = HttpStatusCode.BadRequest,
+                        error = "Phone number is missing"
+                    ),
+                    QueueRoutes.Tokens.VALIDATE
+                )
+                val date = call.parameters["date"]
+
+                Response.send(
+                    call,
+                    tokenUseCase.validate(orgId = orgId, phoneNumber = phoneNumber, date = date?.toLong()),
+                    QueueRoutes.Tokens.VALIDATE
+                )
+            }.onFailure {
+                it.printStackTrace()
+                Response.send(
+                    call,
+                    ApiResponse.failure<String>(
+                        statusCode = HttpStatusCode.InternalServerError,
+                        error = it.message.toString()
+                    ),
+                    QueueRoutes.Tokens.VALIDATE
                 )
             }
         }

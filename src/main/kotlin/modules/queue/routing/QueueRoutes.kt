@@ -24,6 +24,7 @@ object QueueRoutes {
 
     object Tokens {
         const val GET = TOKENS
+        const val VALIDATE = "$TOKENS/validate"
         const val CREATE = "$TOKENS/create"
         const val UPDATE = "$TOKENS/update"
         const val DELETE = "$TOKENS/delete"

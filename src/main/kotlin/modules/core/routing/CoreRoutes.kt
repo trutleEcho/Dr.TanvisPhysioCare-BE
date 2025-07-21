@@ -6,6 +6,7 @@ object CoreRoutes {
 
     object Organizations {
         const val GET = ORGANIZATIONS
+        const val GET_ALL = "$ORGANIZATIONS/all"
         const val GET_PAGINATED = "$ORGANIZATIONS/paginated"
         const val CREATE = "$ORGANIZATIONS/create"
         const val UPDATE_SERVICES = "$ORGANIZATIONS/update-services"

@@ -25,10 +25,10 @@ fun Application.organizationRouting() {
     routing {
         get(CoreRoutes.Organizations.GET) {
             runCatching {
-                val name = call.parameters["name"]
+                val orgId = call.parameters["orgId"]
                 Response.send(
                     call,
-                    organizationUseCase.get(Filters.eq(Organization::name.name, name)),
+                    organizationUseCase.get(orgId),
                     CoreRoutes.Organizations.GET
                 )
             }.onFailure {
@@ -40,6 +40,26 @@ fun Application.organizationRouting() {
                         error = it.message.toString()
                     ),
                     CoreRoutes.Organizations.GET
+                )
+            }
+        }
+
+        get(CoreRoutes.Organizations.GET_ALL) {
+            runCatching {
+                Response.send(
+                    call,
+                    organizationUseCase.getAll(),
+                    CoreRoutes.Organizations.GET_ALL
+                )
+            }.onFailure {
+                it.printStackTrace()
+                Response.send(
+                    call,
+                    ApiResponse.failure<String>(
+                        statusCode = HttpStatusCode.InternalServerError,
+                        error = it.message.toString()
+                    ),
+                    CoreRoutes.Organizations.GET_ALL
                 )
             }
         }

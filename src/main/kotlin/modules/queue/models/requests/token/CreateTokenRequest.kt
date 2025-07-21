@@ -11,6 +11,6 @@ data class CreateTokenRequest(
     val name: String,
     val phoneNumber: String,
     val email: String?=null,
-    val token: String?=null,
+    val date: Long?=null,
     val meta: Meta
 )

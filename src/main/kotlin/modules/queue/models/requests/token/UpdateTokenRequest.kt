@@ -9,5 +9,6 @@ data class UpdateTokenRequest(
     val name: String,
     val phoneNumber: String,
     val email: String? = null,
-    val token: String? = null,
+    val token: Int? = null,
+    val date: Long? = null
 )
